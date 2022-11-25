@@ -1,10 +1,17 @@
+import { TypeOfExpression } from "typescript";
 import "../../dist/output.css";
+import { Status, Undone, Done } from "./Status";
 
 interface TableProps {}
 
 /**
  * Primary UI component for user interaction
  */
+
+interface rowDataType {
+  title: string;
+  percentage?: number;
+}
 export const Table = ({}: TableProps) => {
   const columns = [
     {
@@ -30,6 +37,13 @@ export const Table = ({}: TableProps) => {
     {
       title: "Trạng thái",
       field: "status",
+      render: (rowdata: string | number | undefined) => {
+        if (rowdata === "Chưa thực hiện") return <Status percentage={0} />;
+        if (typeof(rowdata)==='number') return <Status percentage={rowdata} />;
+        if (rowdata === "Tạm dừng") return <Undone />;
+        if (rowdata === "Đã hoàn thành") return <Done />;
+        return "";
+      },
     },
   ];
   const data = [
@@ -39,7 +53,7 @@ export const Table = ({}: TableProps) => {
       startDate: "10/11/2022",
       endDate: "10/11/2022",
       admin: "Bùi Tân Thân",
-      status: "Chưa thực hiện",
+      status: 60,
     },
     {
       id: 26631,
@@ -65,6 +79,7 @@ export const Table = ({}: TableProps) => {
       status: "Chưa thực hiện",
     },
   ];
+
   return (
     <table className="border-collapse">
       <tr>
@@ -79,7 +94,9 @@ export const Table = ({}: TableProps) => {
           {columns.map((header) =>
             header.field in row ? (
               <td className="text-center border py-3 px-9">
-                {row[header.field as keyof typeof row]}
+                {header.render
+                  ? header.render(row[header.field as keyof typeof row])
+                  : row[header.field as keyof typeof row]}
               </td>
             ) : (
               <td className="text-center border py-3 px-9">-</td>
